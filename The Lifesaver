@@ -1,0 +1,27 @@
+extends CharacterBody2D
+
+var wSpeed = 750
+var sSpeed = 1000
+
+var staminaTotal = 100
+var stamina = 100
+var staminaDrain = 20
+
+@onready var stamina_label: Label = $"../staminaLabel"
+
+func player_movement(delta):
+	var input_direction = Input.get_vector("Left","Right","Up","Down")
+	velocity = input_direction * wSpeed
+	if Input.is_action_pressed("Sprint") and stamina > 0:
+		velocity = input_direction * sSpeed
+		await get_tree().create_timer(1).timeout 
+		stamina -= staminaDrain
+		print("Stamina: ", stamina)
+	else:
+		if stamina < staminaTotal:
+			await get_tree().create_timer(3)
+			stamina += staminaDrain 
+	stamina_label.text = "stamina: " + str(stamina)
+func _physics_process(delta: float) -> void:
+	player_movement(delta)
+	move_and_slide()
